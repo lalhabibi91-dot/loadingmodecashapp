@@ -256,11 +256,21 @@ app.use(cors({
   origin: function(origin, callback) {
     if (!origin) return callback(null, true);
     if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL) return callback(null, true);
-    if (/\.(vercel\.app|onrender\.com)$/.test(new URL(origin).hostname) \vert{}\vert{} /^(localhost\vert{}127\.0\.0\.1)$/.test(new URL(origin).hostname)) return callback(null, true);
+    
+    try {
+      const host = new URL(origin).hostname;
+      if (host.endsWith('.vercel.app') || host.endsWith('.onrender.com') || host === 'localhost' || host === '127.0.0.1') {
+        return callback(null, true);
+      }
+    } catch (err) {
+      // Ignore invalid URL formats
+    }
+    
     return callback(null, true);
   },
   credentials: true
 }));
+
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 
