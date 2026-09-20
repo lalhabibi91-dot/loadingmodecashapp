@@ -204,7 +204,7 @@ async function ensureDefaultUser() {
   });
   
   writeUsers(users);
-  console.log(`Default customer user created: ${targetUsername} (1 hours duration)`);
+  console.log(`Default customer user created: ${targetUsername} ( 30days duration)`);
 }
 
 async function ensureMultipleUsers() {
@@ -212,7 +212,6 @@ async function ensureMultipleUsers() {
   const newUsersData = [
     { username: 'tiktok1', pass: 'tiktok@123' },
     { username: 'tiktok2', pass: 'tiktok@098' },
-    { username: 'demo', pass: 'demo123' },
     { username: 'tiktok3', pass: 'tiktok@321' },
     { username: 'tiktok4', pass: 'tiktok@890' },
     { username: 'tiktok5', pass: 'tiktok@567' }
