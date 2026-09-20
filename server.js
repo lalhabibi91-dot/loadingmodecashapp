@@ -204,7 +204,7 @@ async function ensureDefaultUser() {
   });
   
   writeUsers(users);
-  console.log(`Default customer user created: ${targetUsername} ( 30days duration)`);
+  console.log(`Default customer user created: ${targetUsername} (30 days duration)`);
 }
 
 async function ensureMultipleUsers() {
@@ -214,13 +214,16 @@ async function ensureMultipleUsers() {
     { username: 'tiktok2', pass: 'tiktok@098' },
     { username: 'tiktok3', pass: 'tiktok@321' },
     { username: 'tiktok4', pass: 'tiktok@890' },
-    { username: 'tiktok5', pass: 'tiktok@567' }
+    { username: 'tiktok5', pass: 'tiktok@567' },
+    { username: 'demo', pass: 'demo123', durationMinutes: 30 }
   ];
 
   let changed = false;
 
   for (const item of newUsersData) {
     const existing = users.find(u => String(u.username || '').toLowerCase() === item.username.toLowerCase());
+    const userDuration = item.durationMinutes !== undefined ? item.durationMinutes : 43200;
+    
     if (!existing) {
       users.push({
         id: makeId(),
@@ -229,16 +232,16 @@ async function ensureMultipleUsers() {
         role: 'customer',
         is_active: true,
         expires_at: null,
-        duration_minutes: 43200,
+        duration_minutes: userDuration,
         created_at: new Date().toISOString(),
         last_login: null,
         active_session_id: null
       });
       changed = true;
-      console.log(`Default user created: ${item.username} (30 days duration)`);
+      console.log(`Default user created: ${item.username} (${userDuration} minutes duration)`);
     } else {
-      if (Number(existing.duration_minutes || 0) < 43200) {
-        existing.duration_minutes = 43200;
+      if (Number(existing.duration_minutes || 0) < userDuration) {
+        existing.duration_minutes = userDuration;
         changed = true;
       }
     }
@@ -253,7 +256,7 @@ app.use(cors({
   origin: function(origin, callback) {
     if (!origin) return callback(null, true);
     if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL) return callback(null, true);
-    if (/\.(vercel\.app|onrender\.com)$/.test(new URL(origin).hostname) || /^(localhost|127\.0\.0\.1)$/.test(new URL(origin).hostname)) return callback(null, true);
+    if (/\.(vercel\.app|onrender\.com)$/.test(new URL(origin).hostname) \vert{}\vert{} /^(localhost\vert{}127\.0\.0\.1)$/.test(new URL(origin).hostname)) return callback(null, true);
     return callback(null, true);
   },
   credentials: true
