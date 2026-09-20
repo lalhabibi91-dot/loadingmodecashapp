@@ -6,5 +6,13 @@
     "deviceId": "d3dfdb7c-e75a-42c9-a3cf-32e0a051a4ff",
     "createdAt": "2026-09-11T16:28:20.600Z",
     "expiresAt": "2026-10-11T16:28:20.600Z"
+  },
+  "04d234fce6457799dd35ee9f7fd64868de40549ca589a238d4a639e78f69cd39": {
+    "userId": "d7dce12a-d2e1-4aed-b7f4-4842bc98fe1c",
+    "username": "Ank",
+    "role": "customer",
+    "deviceId": "9623961b-7c91-4179-8dc6-46a384f73e87",
+    "createdAt": "2026-09-20T07:34:19.945Z",
+    "expiresAt": "2026-10-20T07:34:19.945Z"
   }
 }

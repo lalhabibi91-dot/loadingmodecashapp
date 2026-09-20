@@ -22,5 +22,77 @@
     "created_at": "2026-09-11T16:27:26.937Z",
     "last_login": "2026-09-11T16:28:20.646Z",
     "active_session_id": "f1b4b7cf2e26e35ce93301bd953764689437779953e29afe38748197e21843db"
+  },
+  {
+    "id": "d7dce12a-d2e1-4aed-b7f4-4842bc98fe1c",
+    "username": "Ank",
+    "password_hash": "$2a$12$HFMFyVyyK3FUZpIVl3zAw.ZJ6a0DSTL48qK5soAsHNvjZQqiYtpbu",
+    "role": "customer",
+    "is_active": true,
+    "expires_at": "2026-10-20T07:32:33.636Z",
+    "duration_minutes": 43200,
+    "created_at": "2026-09-20T07:31:24.887Z",
+    "last_login": "2026-09-20T07:34:19.949Z",
+    "active_session_id": "04d234fce6457799dd35ee9f7fd64868de40549ca589a238d4a639e78f69cd39"
+  },
+  {
+    "id": "bde3ec95-485b-4af6-82ef-58908f3d2b4a",
+    "username": "tiktok1",
+    "password_hash": "$2a$12$qRf.Sq6lJBcHNXcZ7ttGOuWDXvzVdeADnk6shl2E1jHt0tSP.pZ/u",
+    "role": "customer",
+    "is_active": true,
+    "expires_at": null,
+    "duration_minutes": 43200,
+    "created_at": "2026-09-20T07:31:25.441Z",
+    "last_login": null,
+    "active_session_id": null
+  },
+  {
+    "id": "ffcc8e5e-7c89-477e-9010-6bf280c22e29",
+    "username": "tiktok2",
+    "password_hash": "$2a$12$dKRl3miJeSBpqiqeqI.Mg.cCF/W5wd6pgzCUQnyxzKOEzp0ZD5u/e",
+    "role": "customer",
+    "is_active": true,
+    "expires_at": null,
+    "duration_minutes": 43200,
+    "created_at": "2026-09-20T07:31:25.987Z",
+    "last_login": null,
+    "active_session_id": null
+  },
+  {
+    "id": "b37e8fd3-5cdb-430b-be33-154382332922",
+    "username": "tiktok3",
+    "password_hash": "$2a$12$2Q59mFKBrjX4xB9TK4R52.txQZ/BWKyu2RZ0XoW/LUkMJ6KOGyHL6",
+    "role": "customer",
+    "is_active": true,
+    "expires_at": null,
+    "duration_minutes": 43200,
+    "created_at": "2026-09-20T07:31:26.533Z",
+    "last_login": null,
+    "active_session_id": null
+  },
+  {
+    "id": "8a190953-99b2-4a2f-9606-676260e3259f",
+    "username": "tiktok4",
+    "password_hash": "$2a$12$zIZqbsPRHl1EPq5wqxuoN.OGflv3lzaD0elkNdye1NxmbWzPJIG2a",
+    "role": "customer",
+    "is_active": true,
+    "expires_at": null,
+    "duration_minutes": 43200,
+    "created_at": "2026-09-20T07:31:27.074Z",
+    "last_login": null,
+    "active_session_id": null
+  },
+  {
+    "id": "b1589aab-aba8-4b91-bdfc-0e7b59c755cc",
+    "username": "tiktok5",
+    "password_hash": "$2a$12$ZzcyTVczvbue.N9ASZJ4wuGkdhYimWTJpOJnXqXVmXqurGBOT5ANm",
+    "role": "customer",
+    "is_active": true,
+    "expires_at": null,
+    "duration_minutes": 43200,
+    "created_at": "2026-09-20T07:31:27.612Z",
+    "last_login": null,
+    "active_session_id": null
   }
 ]

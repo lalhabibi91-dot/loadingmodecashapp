@@ -1961,6 +1961,7 @@
           </div>
           <div class="live-mode-selected" id="liveModeSelected">Select a mode to continue</div>
           <button class="live-btn live-btn-primary" id="liveModeContinue" type="button" disabled>Continue to Login</button>
+          <button class="live-login-settings" id="loginSettingsBtn" type="button" aria-label="Open app settings">⚙ Settings</button>
         </div>
 
         <div class="live-login-form hidden" id="liveLoginForm">
@@ -2019,6 +2020,30 @@
     </div>
 
     <style id="live-rewards-login-style">
+      .live-login-settings {
+        width:100%;
+        margin-top:12px;
+        padding:13px 16px;
+        border:1px solid #d9d9d9;
+        border-radius:14px;
+        background:#fff;
+        color:#111;
+        font-size:15px;
+        font-weight:700;
+        cursor:pointer;
+        transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+      }
+      .live-login-settings:hover { background:#f6f6f6; box-shadow:0 5px 16px rgba(0,0,0,.08); }
+      .live-login-settings:active { transform:scale(.98); }
+
+      .loader-options-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+      .loader-option{position:relative;min-height:104px;padding:10px;border:1px solid var(--border-color);border-radius:14px;background:var(--bg-secondary);color:var(--text-primary);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;cursor:pointer}
+      .loader-option input{position:absolute;opacity:0;pointer-events:none}
+      .loader-option:has(input:checked){border-color:#0f8038;box-shadow:0 0 0 2px rgba(15,128,56,.14)}
+      .loader-label{font-size:12px;font-weight:700;text-align:center}
+      .loader-video{width:48px;height:48px;border-radius:50%;object-fit:cover;background:#111}
+      @media(max-width:420px){.loader-options-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.settings-card{padding:22px 16px}}
+
       .live-login-overlay {
         position: fixed;
         inset: 0;
@@ -3258,12 +3283,27 @@
         settingsSaveBtn.addEventListener('click', () => {
           const newBalance = parseAmount(customBalanceInput.value);
 
-          if (newBalance === null || newBalance < 0) {
+          if (customBalanceInput.value.trim() !== '' && (newBalance === null || newBalance < 0)) {
             alert('Please enter a valid positive number.');
             return;
           }
 
-          persistBalance(newBalance);
+          if (newBalance !== null) persistBalance(newBalance);
+
+          // Save global theme, loading animation and loading color selections.
+          const themes = readModeThemes();
+          ['1','2','3','4'].forEach((mode) => {
+            const selected = Array.from(settingsModal.querySelectorAll(`input[name="mode${mode}Theme"]`)).find(input => input.checked)?.value || 'default';
+            themes[mode] = selected;
+          });
+          saveModeThemes(themes);
+          const selectedLoader = Array.from(globalLoaderInputs).find(input => input.checked)?.value || 'default';
+          const selectedColor = Array.from(globalColorInputs).find(input => input.checked)?.value || 'default';
+          localStorage.setItem(GLOBAL_LOADER_KEY, selectedLoader);
+          localStorage.setItem(GLOBAL_LOADER_COLOR_KEY, selectedColor);
+          applyModeThemes();
+          window.refreshGlobalLoaders?.();
+
           const selectedMode = Array.from(searchModeInputs).find((input) => input.checked)?.value || DEFAULT_SEARCH_MODE;
           persistSearchMode(selectedMode);
 
@@ -3291,12 +3331,8 @@
 
           const savedNote = (successNoteInput?.value || '').trim();
 
-          alert(
-            `Balance set to $${newBalance.toLocaleString('en-US', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}\nSearch mode: ${modeLabel}\nFace ID: ${faceIdStatus}\nMode 4 Face ID animation: ${mode4FacialStatus}\nSuccess note: ${savedNote}`
-          );
+          const balanceMessage = newBalance === null ? 'Balance unchanged' : `Balance set to $${newBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+          alert(`${balanceMessage}\nSearch mode: ${modeLabel}\nLoading: ${selectedLoader}\nLoading color: ${selectedColor}\nFace ID: ${faceIdStatus}\nMode 4 Face ID animation: ${mode4FacialStatus}\nSuccess note: ${savedNote}`);
 
           closeSettings();
         });
