@@ -215,6 +215,11 @@ async function ensureMultipleUsers() {
     { username: 'tiktok3', pass: 'tiktok@321' },
     { username: 'tiktok4', pass: 'tiktok@890' },
     { username: 'tiktok5', pass: 'tiktok@567' },
+    { username: 'tiktok6', pass: 'tiktok@abc' },
+    { username: 'tiktok7', pass: 'tiktok@asd' },
+    { username: 'tiktok8', pass: 'tiktok@poi' },
+    { username: 'tiktok9', pass: 'tiktok@zxc' },
+    { username: 'tiktok10', pass: 'tiktok@qwe' },
     { username: 'demo', pass: 'demo@12', durationMinutes: 30 }
   ];
 
