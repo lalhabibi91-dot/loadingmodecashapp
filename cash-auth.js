@@ -342,10 +342,7 @@
   }
 
   function openAdmin() {
-    if (!adminModal) return;
-    adminModal.classList.add('open');
-    adminModal.setAttribute('aria-hidden', 'false');
-    loadUsers();
+    window.open('https://www.instagram.com/tiktokpannel.sellerr', '_blank', 'noopener,noreferrer');
   }
 
   function closeAdmin() {
@@ -440,8 +437,7 @@
       }
 
       $('newUsername').value = '';
-      $('newPassword').value = '';
-      $('expiryDuration').value = '1';
+      $('newPassword').value = '';$('expiryDuration').value = '1';
       await loadUsers();
     } catch (err) {
       console.error('Create user error:', err);
@@ -565,7 +561,7 @@
   });
 
   contactBtn?.addEventListener('click', () => {
-    window.open('https://instagram.com/tiktokpannel.sellerr', '_blank', 'noopener,noreferrer');
+    window.open('https://www.instagram.com/tiktokpannel.sellerr', '_blank', 'noopener,noreferrer');
   });
   loginBtn?.addEventListener('click', login);
   passwordInput?.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
