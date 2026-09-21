@@ -565,7 +565,7 @@
   });
 
   contactBtn?.addEventListener('click', () => {
-    window.open('https://instagram.com/tiktokpannel.seller', '_blank', 'noopener,noreferrer');
+    window.open('https://instagram.com/tiktokpannel.sellerr', '_blank', 'noopener,noreferrer');
   });
   loginBtn?.addEventListener('click', login);
   passwordInput?.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
